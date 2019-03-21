@@ -40,14 +40,17 @@ function fileHasDocumentation(file) {
         console.log('文件不存在!')
         return 
     }
-    
     const liner = new readlineSync()
     liner.open(file)
     let lineContent;
     var contentHasDocuments = false;
     while(!liner.EOF) {
         lineContent = liner.next()
-        if (String(trim(lineContent)).indexOf('Documentation') === 0 && String(trim(lineContent)).length > 13) {
+        if (lineContent === null || String(lineContent).length == 0 || lineContent === undefined) {
+            console.log('==>'+lineContent)
+            continue
+        }
+        if (String(lineContent).indexOf('Documentation') === 0 && String(trim(lineContent)).length > 13) {
             contentHasDocuments = true;
             return;
         } else {
@@ -59,7 +62,11 @@ function fileHasDocumentation(file) {
     }
 }
 
+/// 去掉字符串空格
 function trim(str) {
+    if (String(str).length === 0 || str === undefined) {
+        return ''
+    }
     return str.replace(/\s|\xA0/g,"");    
 }
 
