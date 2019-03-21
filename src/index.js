@@ -1,6 +1,5 @@
 #!/usr/bin/env  node
 
-var lint = require('./a')
 const Path = require('path')
 const fs = require('fs')
 const glob = require('glob')
