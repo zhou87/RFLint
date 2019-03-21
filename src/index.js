@@ -4,7 +4,7 @@ var lint = require('./a')
 const Path = require('path')
 const fs = require('fs')
 const glob = require('glob')
-const readlineSync = require('./readline-sync')
+const readlineSync = require('../readline-sync')
 require('colors')
 
 // 检测文件
@@ -32,7 +32,6 @@ function lintFile(file) {
 
     /// 不重名
     noSameName(file)
-
 
 }
 
