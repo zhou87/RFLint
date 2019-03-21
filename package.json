@@ -1,0 +1,24 @@
+{
+  "name": "rflint",
+  "version": "0.0.1",
+  "description": "A tool A tool to check style and conventions of Robot Framework.",
+  "main": "index.js",
+  "scripts": {
+    "test": "rflint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.souche-inc.com:zhouhuiping/rflint.git"
+  },
+  "keywords": [
+    "Robot",
+    "Framework",
+    "lint",
+    "rflint"
+  ],
+  "author": "zhouhuiping",
+  "license": "ISC",
+  "bin": {
+    "rflint": "./index.js"
+  }
+}
