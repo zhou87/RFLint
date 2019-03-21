@@ -2,7 +2,7 @@
   "name": "rflint",
   "version": "0.0.1",
   "description": "A tool A tool to check style and conventions of Robot Framework.",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "rflint"
   },
@@ -19,6 +19,6 @@
   "author": "zhouhuiping",
   "license": "ISC",
   "bin": {
-    "rflint": "./index.js"
+    "rflint": "src/index.js"
   }
 }
