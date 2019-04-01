@@ -32,6 +32,12 @@ function lintFile(file) {
     /// 不重名
     noSameName(file)
 
+    /// for循环内关键字是否有反斜杠标识
+    checkForLoop(file)
+
+    /// if语句下面是否是"..."开头
+    checkIf(file)
+
 }
 
 /// 检测是否写了Documentation
@@ -74,3 +80,33 @@ function trim(str) {
 function noSameName(file) {
     
 }
+
+/// 检测FOR循环内关键字用“\”标识
+function checkForLoop(file) {
+    const liner = new readlineSync()
+    liner.open(file)
+    let lineContent
+    let theline = 0
+    let lineNumber = 0;
+    while(!liner.EOF) {
+        lineContent = liner.next()
+        lineNumber += 1
+        if (trim(String(lineContent)).indexOf(':FOR') === 0) {
+            theline = lineNumber
+        }
+        /// 如果是for循环内第一行
+        if (lineNumber == (theline+1) && theline != 0) {
+            if (!(trim(String(lineContent)).indexOf('\\') === 0)) {
+                console.log('for循环内语句没有\'\\\'开头')
+                return
+            }
+        }   
+    }
+}
+
+/// 检测if后面的语句是否是"..."开头
+function checkIf(file) {
+    
+}
+
+
