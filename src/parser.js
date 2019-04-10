@@ -8,6 +8,7 @@ const keywordTable = require('./tables/KeyWorksTable')
 const testCaseTable = require('./tables/TestCaseTable')
 const variablesTable = require('./tables/VariableTable')
 const Cell = require('./tables/Cell')
+const Row = require('./tables/Row')
 
 class Parser {
 
@@ -63,7 +64,8 @@ class Parser {
                 } 
             } else {
                 let cells = this.parserCells(lineContent);
-                currentTable.rows.push(cells)
+                let row = new Row(lineNumber,cells)
+                currentTable.rows.push(row)
             }
         }
     }
