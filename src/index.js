@@ -9,10 +9,9 @@ const Parser = require('./parser')
 var consoleJson = new Array()
 const sourceDir = Path.resolve(__dirname,'../')
 const [node, path, ...argv] = process.argv
+
 // 检测文件
 searchFiles()
-
-/// ['robot/车辆详情页.robot', '首页.robot']
 
 /// 查找robot文件
 function searchFiles(path) {
@@ -58,10 +57,10 @@ function lintFile(file) {
     fileHasDocumentation(file,parser.tables)
 
     /// 不重名
-    noSameName(file)
+    noSameName(file,parser.tables)
 
     /// for循环内关键字是否有反斜杠标识
-    checkForLoop(file)
+    checkForLoop(file,parser.tables)
 
     /// if语句下面是否是"..."开头
     checkIf(file)
@@ -116,34 +115,70 @@ function trim(str) {
 }
 
 /// Variable、Keywords、TestCase文件内不能重名
-function noSameName(file) {
-    
-}
-
-/// 检测FOR循环内关键字用“\”标识
-function checkForLoop(file) {
-    const liner = new readlineSync()
-    liner.open(file)
-    let lineContent
-    let theline = 0
-    let lineNumber = 0;
-    while(!liner.EOF) {
-        lineContent = liner.next()
-        lineNumber += 1
-        if (trim(String(lineContent)).indexOf(':FOR') === 0) {
-            theline = lineNumber
-        }
-        /// 如果是for循环内第一行
-        if (lineNumber == (theline+1) && theline != 0) {
-            if (!(trim(String(lineContent)).indexOf('\\') === 0)) {
-                console.log('for循环内语句没有\'\\\'开头')
-                return
+function noSameName(file,tables) {
+    /// 存放keyWords、testCase、Variable的row数组
+    var keywordsList = new Array();
+    for (let i = 0; i < tables.length; i++) {
+        let table = tables[i]
+        /// settings不检查
+        if (table.name != 'Settings') {
+            for (let j = 0; j < table.rows.length; j++) {
+                var row = table.rows[j];
+                let cells = row.cells;
+                /// 如果是关键字 加入数组
+                if (cells.length > 0) {
+                    let firstCell = cells[0];
+                    // console.log('<========>' + firstCell.text + '///' + firstCell.lineNumber)
+                    /// 如果是顶格写的并且不以'...'、'#'开头的cell,则判定为一个Variable/Keywords/TestCase
+                    if ((firstCell.lineNumber == 0) && (String(firstCell.text)[0] != '.') && (String(firstCell.text)[0] != '#') && (String(firstCell.text) != 'undefined')) {
+                        // console.log("============>+++:" + String(firstCell.text))
+                        if (keywordsList.length == 0) {
+                            keywordsList.push(row);
+                        } else {
+                            /// 判断是否有同名的关键字
+                            let currentKeyWordList = keywordsList.slice()
+                            for (let m = 0; m < currentKeyWordList.length; m++) {
+                                let keyWordRow = currentKeyWordList[m];
+                                let keyword = keyWordRow.cells[0].text
+                                /// 如果有同名的关键字
+                                if (String(keyword) == String(firstCell.text)) {
+                                    /// 构建错误信息
+                                    let outputInfo = constructOutPutJson(keyWordRow.cells[0].lineNumber, sourcefolder + '/' +file, keyWordRow.lineNumber + ',' + row.lineNumber, '文件内有同名的Variable、Keywords、TestCase: ' + keyword,'Error','Same Name')
+                                    consoleJson.push(outputInfo);
+                                } else if (m == (currentKeyWordList.length-1)){    
+                                    /// 不同名则加入数组
+                                    keywordsList.push(row);
+                                }
+                            }
+                        }
+                    }
+                }
             }
-        }   
+        }
     }
 }
 
-/// 检测if后面的语句是否是"..."开头
+/// 检测FOR循环内关键字用“\”标识
+function checkForLoop(file,tables) {
+    for (let i = 0; i < tables.length; i++) {
+        let table = tables[i];
+        for (let j = 0; j < table.rows.length; j++) {
+            let cells = table.rows[j].cells;
+            if (cells.length > 0) {
+                if (cells[0].text == ':FOR') {
+                    let nextCells = table.rows[j+1].cells
+                    /// 检测for循环首行第一个cell必须为‘\’
+                    if (nextCells[0].text != '\\') {
+                        let output = constructOutPutJson(cells[0].lineNumber,sourceDir+'/'+file,table.rows[j+1].lineNumber, 'FOR循环内关键字用反斜杠换行', 'Error', 'For Loop')
+                        consoleJson.push(output);
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// 检测if后面的语句是否是"..."开头(尚待考虑)
 function checkIf(file) {
     
 }
