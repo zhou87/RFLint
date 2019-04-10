@@ -5,6 +5,7 @@ const fs = require('fs')
 const glob = require('glob')
 const readlineSync = require('../readline-sync')
 require('colors')
+const Parser = require('./parser')
 
 // 检测文件
 searchFiles()
@@ -18,7 +19,14 @@ function searchFiles(path) {
             console.log('Linting robot files in current working directory')
             files.forEach(function (file) {
                 console.log('Linting ' + '\'' + file + '\'')
-                lintFile(file)
+                // lintFile(file)
+                let sourcefile = Path.resolve(__dirname,'../../..');
+
+                console.log('====>' + sourcefile);
+                // let parser = new Parser();
+                // parser.parserFile(file);
+                // console.log('打印信息=====>');
+                // console.log(parser.tables);
             })
         }
     })
