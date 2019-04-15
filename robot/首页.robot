@@ -9,5 +9,5 @@ test-Pass
     :FOR  ${element}  IN  @{list}
     \  Should Not Be Empty  ${element}
     Log         ${list}
-    
+    Run Keyword If  '${list[0]}'=='1'
 

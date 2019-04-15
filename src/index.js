@@ -14,7 +14,7 @@ const [node, path, ...argv] = process.argv
 searchFiles()
 
 /// 查找robot文件
-function searchFiles(path) {
+function searchFiles() {
     var sourceFiles = argv
     if (sourceFiles.length>0) {
         sourceFiles.forEach(file=> {
@@ -63,10 +63,19 @@ function lintFile(file) {
     checkForLoop(file,parser.tables)
 
     /// if语句下面是否是"..."开头
-    checkIf(file)
+    checkIf(file, parser.tables)
 
     /// resource和Test SetUp之间应该空一行
     checkResourceAndTestSetUp(file, parser.tables)
+
+    /// keyWords和TestCase尽量不要共存
+    keywordShouldNotContainTestCase(file, parser.tables);
+
+    /// 字符串判断引号和单引号成对出现
+    compareStringNeedSingleQuote(file,parser.tables)
+
+    /// 字符串定义和比较使用双引号，单引号报警告、
+    stringUseDoubleQuoteSigleQuoteWarning(file, parser.tables)
 
     /// 打印json信息
     console.log(consoleJson);
@@ -143,7 +152,7 @@ function noSameName(file,tables) {
                                 /// 如果有同名的关键字
                                 if (String(keyword) == String(firstCell.text)) {
                                     /// 构建错误信息
-                                    let outputInfo = constructOutPutJson(keyWordRow.cells[0].lineNumber, sourcefolder + '/' +file, keyWordRow.lineNumber + ',' + row.lineNumber, '文件内有同名的Variable、Keywords、TestCase: ' + keyword,'Error','Same Name')
+                                    let outputInfo = constructOutPutJson(keyWordRow.cells[0].lineNumber, sourceDir + '/' +file, keyWordRow.lineNumber + ',' + row.lineNumber, '文件内有同名的Variable、Keywords、TestCase: ' + keyword,'Error','Same Name')
                                     consoleJson.push(outputInfo);
                                 } else if (m == (currentKeyWordList.length-1)){    
                                     /// 不同名则加入数组
@@ -179,8 +188,27 @@ function checkForLoop(file,tables) {
 }
 
 /// 检测if后面的语句是否是"..."开头(尚待考虑)
-function checkIf(file) {
-    
+function checkIf(file,tables) {
+    for (let i = 0; i < tables.length; i++) {
+        let table = tables[i];
+        for (let j = 0; j < table.rows.length; j++) {
+            let cells = table.rows[j].cells;
+            if (cells.length > 0) {
+                if (cells[0].text == 'Run Keyword If') {
+                    let nextCells = table.rows[j+1].cells
+                    console.log(nextCells)
+                    /// 检测run keyword if下一个row的第一个cell应该为'...'
+                    if (nextCells.length == 0) {
+                        let output = constructOutPutJson(cells[0].lineNumber,file,table.rows[j+1].lineNumber, 'Run Keyword If条件语句之后的条件代码尽量另起一行，并用\'...\'换行', 'Waring', 'Run Keyword If')
+                        consoleJson.push(output);
+                    } else if (nextCells[0].text != '...') {
+                        let output = constructOutPutJson(cells[0].lineNumber,file,table.rows[j+1].lineNumber, 'Run Keyword If条件语句之后的条件代码尽量另起一行，并用\'...\'换行', 'Waring', 'Run Keyword If')
+                        consoleJson.push(output);
+                    }
+                }
+            }
+        }
+    }
 }
 
 /// resource和Test SetUp之间应该空一行
@@ -211,6 +239,106 @@ function checkResourceAndTestSetUp(file,tables) {
     }
 }
 
+/// keyword里面不能包含testCase
+function keywordShouldNotContainTestCase(file,tables) {
+    var hasKeyWordsTable = false;
+    var hasTestCaseTable = false;
+    var keyWordsTable = tables[0];
+    var TestCaseTable = tables[0];
+    for (let i = 0; i < tables.length; i++) {
+        let table = tables[i];
+        let tableName = table.name;
+        if (tableName == 'Keywords') {
+            hasKeyWordsTable = true;
+            keyWordsTable = table
+        }
+        if (tableName == 'Test Case') {
+            hasTestCaseTable = true;
+            TestCaseTable = table
+        }
+    }
+    /// 如果同时都有的话，报告错误
+    if (hasKeyWordsTable && hasTestCaseTable) {
+        let outputInfo = constructOutPutJson(0, sourceDir + '/' +file, keyWordsTable.lineNumber + ',' + TestCaseTable.lineNumber, 'keyWords和TestCase不能共存', 'Warning', 'KeyWordsAndTestCase')
+        consoleJson.push(outputInfo);
+    }   
+}
+
+/// 字符串判断引号和单引号成对出现
+/*
+"${result['data']['carType']}" == "2"
+'plateNo' in ${result['data']['orderCarVO']}
+${length} == 1
+${first_follow_period} > 7200
+'${flag}'!='FAIL'
+*/
+function compareStringNeedSingleQuote(file,tables) {
+    for (let i = 0; i < tables.length; i++) {
+        let table = tables[i];
+        for (let j = 0; j < table.rows.length; j++) {
+            let row = table.rows[j]
+            for (let m = 0; m < row.cells.length; m++) {
+                let cell = row.cells[m];
+                /// 如果有条件判断
+                if (String(cell.text) == 'Run Keyword If') {
+                    let nextText = row.cells[m+1].text;
+                    let equalReg = RegExp(/==/)
+                    let unequalReg = RegExp(/!=/)
+                    console.log('>>>>>>>>>>>>>>' +  nextText)
+                    if (equalReg.test(String(nextText)) || unequalReg.test(String(nextText))) {
+                        console.log('<<<<<<<<<<<<<<<<' + String(nextText))
+                        /// 如果是开头有单引号
+                        if (String(nextText)[0] == '\'') {
+                            /// 结尾如果不是单引号，报告错误
+                            if (String(nextText)[(String(nextText).length -1)] != '\'') {
+                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber,file,row.lineNumber,'字符判断两边都要打上单引号','Warning','quote');
+                                consoleJson.push(outputInfo);
+                            }
+                        } else if (String(nextText)[0] == '\"') {  /// 如果开头有双引号
+                            /// 结尾如果不是双引号，报告错误
+                            if (String(nextText)[(String(nextText).length -1)] != '\"') {
+                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber,file,row.lineNumber,'字符判断两边都要打上双引号','Warning','quote');
+                                consoleJson.push(outputInfo);
+                            }
+                        } else if (String(nextText)[(String(nextText).length - 1)] == '\'') {  /// 如果结尾是单引号
+                            /// 如果开头不是单引号
+                            if (String(nextText)[0] != '\'') {
+                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber,file,row.lineNumber,'字符判断两边都要打上单引号','Warning','quote');
+                                consoleJson.push(outputInfo);
+                            }
+                        } else if (String(nextText)[(String(nextText).length - 1)] == '\"') {  /// 如果结尾是双引号
+                            if (String(nextText)[0] != '\"') {
+                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber,file,row.lineNumber,'字符判断两边都要打上双引号','Warning','quote');
+                                consoleJson.push(outputInfo);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// 字符串使用双引号单引号报警告
+function stringUseDoubleQuoteSigleQuoteWarning(file,tables) {
+    for (let i = 0; i < tables.length; i++) {
+        let table = tables[i];
+        for (let j = 0; j < table.rows.length; j++) {
+            let row = table.rows[j];
+            let cells = row.cells;
+            for (let m = 0; m < cells.length; m++) {
+                let cell = cells[m]
+                console.log('>>>>>>>>>>>>>>>>>' + cell.text)
+                /// 如果是单引号开头或结尾
+                if (cell.text[0] == '\'' || cell.text[cell.text.length - 1] == '\'') {
+                    let outPutInfo = constructOutPutJson(cell.lineNumber,file,row.lineNumber,'字符串定义和判断尽量用双引号', 'Warning', 'Quote')
+                    consoleJson.push(outPutInfo)
+                }
+            }
+        }
+    }
+}
+
 /**
  * 违规信息字典
  * 1.character: 违规字符地址;
@@ -231,7 +359,4 @@ function constructOutPutJson(character,file,line,reason,severity,type) {
             }
     return dic;
 }
-
-
-
 
