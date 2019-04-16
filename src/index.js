@@ -77,6 +77,9 @@ function lintFile(file) {
     /// 字符串定义和比较使用双引号，单引号报警告、
     stringUseDoubleQuoteSigleQuoteWarning(file, parser.tables)
 
+    /// 传参需要带上参数名
+    completeParameters(file,parser.tables)
+
     /// 打印json信息
     console.log(consoleJson);
 
@@ -284,9 +287,7 @@ function compareStringNeedSingleQuote(file,tables) {
                     let nextText = row.cells[m+1].text;
                     let equalReg = RegExp(/==/)
                     let unequalReg = RegExp(/!=/)
-                    console.log('>>>>>>>>>>>>>>' +  nextText)
                     if (equalReg.test(String(nextText)) || unequalReg.test(String(nextText))) {
-                        console.log('<<<<<<<<<<<<<<<<' + String(nextText))
                         /// 如果是开头有单引号
                         if (String(nextText)[0] == '\'') {
                             /// 结尾如果不是单引号，报告错误
@@ -328,11 +329,43 @@ function stringUseDoubleQuoteSigleQuoteWarning(file,tables) {
             let cells = row.cells;
             for (let m = 0; m < cells.length; m++) {
                 let cell = cells[m]
-                console.log('>>>>>>>>>>>>>>>>>' + cell.text)
                 /// 如果是单引号开头或结尾
                 if (cell.text[0] == '\'' || cell.text[cell.text.length - 1] == '\'') {
                     let outPutInfo = constructOutPutJson(cell.lineNumber,file,row.lineNumber,'字符串定义和判断尽量用双引号', 'Warning', 'Quote')
                     consoleJson.push(outPutInfo)
+                }
+            }
+        }
+    }
+}
+
+/// 传参的时候把参数的参数名补上
+function completeParameters(file, tables) {
+    for (let i = 0; i < tables.length; i++) {
+        let table = tables[i];
+        for (let j = 0; j < table.rows.length; j++) {
+            let row = table.rows[j];
+            let cells = row.cells;
+            for (let m = 0; m < cells.length; m++) {
+                let cell = cells[m];
+                /// 不是关键字或者suite名
+                if (cell.lineNumber != 0) {
+                    /// 查找语句里面是否带有中文的
+                    let cellText = cell.text;
+                    let chinessReg = RegExp(/(^[a-z]+|^[\u4e00-\u9fa5]+)[\u4e00-\u9fa5]+/);
+                    if (chinessReg.test(cellText)) {
+                        console.log('中文字：>>>>>>>>>>>>>>>' + cellText)
+                        /// 取下一个cell
+                        if (m != (cells.length - 1)) {
+                            let nextCell = cells[m+1];
+                            let patamserList = nextCell.text.split('=');
+                            /// 如果=切分后只有一个元素则报警告
+                            if (patamserList.length < 2) {
+                                let outPutInfo = constructOutPutJson(nextCell.lineNumber, file, row.lineNumber, '传参的时候没有把参数名补齐。关键字: ' + cellText, 'Warning', 'ParameterName')
+                                consoleJson.push(outPutInfo)
+                            }   
+                        }
+                    }
                 }
             }
         }
@@ -359,4 +392,3 @@ function constructOutPutJson(character,file,line,reason,severity,type) {
             }
     return dic;
 }
-
