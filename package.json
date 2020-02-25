@@ -1,6 +1,6 @@
 {
   "name": "rflint",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A tool A tool to check style and conventions of Robot Framework.",
   "main": "src/index.js",
   "scripts": {
