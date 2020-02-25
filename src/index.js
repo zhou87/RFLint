@@ -38,7 +38,7 @@ function searchFiles(filelist = []) {
                 lintFile(file)
             }
         });
-        console.log('✅  Lint done! There is you report: ');
+        console.log('✅  Lint done! There is you report: \n🗞  Total files: ' + filelist.length + '\n 🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠');
         /// 检测完后打印违规信息
         console.log(JSON.stringify(consoleJson, null, "\t").green);
     }
