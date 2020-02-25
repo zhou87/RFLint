@@ -7,7 +7,7 @@ Test Setup  Log  test setup
 test-Pass
     @{list}   Create List   1  2  3
     :FOR  ${element}  IN  @{list}
-    \  Should Not Be Empty  ${element}
+      Should Not Be Empty  ${element}
     Log         ${list}
     Run Keyword If  '${list[0]}'=='1'
     ...      Log  test 

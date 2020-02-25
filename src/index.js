@@ -5,21 +5,32 @@ const fs = require('fs')
 const Parser = require('./parser')
 const [node, path, ...argv] = process.argv
 const consoleJson = new Array()
+const Pwd = process.cwd();
 
-// 检测文件
-searchFiles()
+/// 检测文件
+run();
+
+/// 递归查询robot文件
+function readFileList(dir, fileList = []) {
+    console.log(dir);
+    const files = fs.readdirSync(dir);
+    files.forEach((item) => {
+        var fullpath = Path.join(dir, item);
+        const stat = fs.statSync(fullpath);
+        if (stat.isDirectory()) {
+            readFileList(fullpath, fileList);
+        } else if (endWith(item, '.robot')) {
+            fileList.push(fullpath);
+        }
+    });
+    return fileList;
+}
 
 /// 查找robot文件
-function searchFiles() {
-    /// 如果有传入文件
-    var sourceFiles = argv
-    console.log(argv);
-    console.log(process.cwd());
-    console.log(__dirname);
-    console.log(process.execPath)
+function searchFiles(filelist = []) {
     console.log("🚀  Prelint...");
-    if (sourceFiles.length>0) {
-        sourceFiles.forEach((file) => {
+    if (filelist.length>0) {
+        filelist.forEach((file) => {
             /// 判断文件是.robot后缀
             if (endWith(file, '.robot')) {
                 console.log("⚙  Find a robot file, start lint...");
@@ -30,6 +41,15 @@ function searchFiles() {
         /// 检测完后打印违规信息
         console.log(JSON.stringify(consoleJson));
     }
+}
+
+function run() {
+    var fileList = readFileList(Pwd);
+    if (fileList.length == 0) {
+        console.log('❌  没有找到相应的文件，请确认您的当前目录是否是在项目根目录！');
+        process.exit();
+    }
+    searchFiles(fileList);
 }
 
 /// 对文件进行lint检测
