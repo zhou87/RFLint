@@ -179,12 +179,14 @@ function checkForLoop(file,tables) {
                     /// 过滤注释
                     for (let m = (j+1); m < table.rows.length; m++) {
                         let row = table.rows[m];
-                        if (String(row.cells[0].text).indexOf('#') != 0) {
-                            index = m;
-                            break;
+                        if (row.cells.length > 0) {
+                            if (String(row.cells[0].text).indexOf('#') != 0) {
+                                index = m;
+                                break;
+                            }
                         }
                     }
-                    let nextCells = table.rows[index].cells
+                    let nextCells = table.rows[index].cells;
                     /// 检测for循环首行第一个cell必须为‘\’, 过滤注释
                     if (nextCells[0].text != '\\') {
                         let output = constructOutPutJson(cells[0].lineNumber, file, table.rows[j+1].lineNumber, 'FOR循环内关键字用反斜杠换行', 'Error', 'For Loop')
