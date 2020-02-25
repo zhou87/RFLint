@@ -39,13 +39,13 @@ function searchFiles(filelist = []) {
         })
         console.log('✅  Lint done! There is you report: ');
         /// 检测完后打印违规信息
-        console.log(JSON.stringify(consoleJson).green);
+        console.log(JSON.stringify(consoleJson, null, "\t").green);
     }
 }
 
 function run() {
     console.log("🚀  Prelint...");
-    console.log("👺  current dir: " + Pwd);
+    console.log("👺  Current Directory: " + Pwd);
     var fileList = readFileList(Pwd);
     if (fileList.length == 0) {
         console.log('❌  没有找到相应的文件，请确认您的当前目录是否是在项目根目录！');
