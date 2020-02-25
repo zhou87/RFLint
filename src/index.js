@@ -6,14 +6,13 @@ const Parser = require('./parser')
 const [node, path, ...argv] = process.argv
 const consoleJson = new Array()
 const Pwd = process.cwd();
-
+require('colors');
 /// 检测文件
 run();
 
 /// 递归查询robot文件
 function readFileList(dir, fileList = []) {
-    console.log("🚀  Prelint...");
-    console.log("👺  当前路径: " + dir);
+    
     const files = fs.readdirSync(dir);
     files.forEach((item) => {
         var fullpath = Path.join(dir, item);
@@ -33,17 +32,20 @@ function searchFiles(filelist = []) {
         filelist.forEach((file) => {
             /// 判断文件是.robot后缀
             if (endWith(file, '.robot')) {
-                console.log("⚙  Find a robot file, start lint...");
+                var fileName = file.split('/');
+                console.log("⚙  Find a robot file: " + fileName.pop().yellow + ", start lint...");
                 lintFile(file)
             }
         })
         console.log('✅  Lint done! There is you report: ');
         /// 检测完后打印违规信息
-        console.log(JSON.stringify(consoleJson));
+        console.log(JSON.stringify(consoleJson).green);
     }
 }
 
 function run() {
+    console.log("🚀  Prelint...");
+    console.log("👺  current dir: " + Pwd);
     var fileList = readFileList(Pwd);
     if (fileList.length == 0) {
         console.log('❌  没有找到相应的文件，请确认您的当前目录是否是在项目根目录！');
