@@ -28,7 +28,7 @@ class Parser {
             lineNumber += 1;
             /// 每行内容
             lineContent = liner.next();
-            console.log(lineNumber + '  |  '  + lineContent);
+            // console.log(lineNumber + '  |  '  + lineContent);
             /// 如果是*** xxx ***开头则创建一个table
             if (String(lineContent).indexOf('***') == 0) {
                 var settingReg = RegExp(/Settings/)

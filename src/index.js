@@ -12,7 +12,8 @@ run();
 
 /// 递归查询robot文件
 function readFileList(dir, fileList = []) {
-    console.log(dir);
+    console.log("🚀  Prelint...");
+    console.log("👺  当前路径: " + dir);
     const files = fs.readdirSync(dir);
     files.forEach((item) => {
         var fullpath = Path.join(dir, item);
@@ -28,7 +29,6 @@ function readFileList(dir, fileList = []) {
 
 /// 查找robot文件
 function searchFiles(filelist = []) {
-    console.log("🚀  Prelint...");
     if (filelist.length>0) {
         filelist.forEach((file) => {
             /// 判断文件是.robot后缀
