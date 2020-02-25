@@ -7,12 +7,13 @@ const [node, path, ...argv] = process.argv
 const consoleJson = new Array()
 const Pwd = process.cwd();
 require('colors');
+
+
 /// 检测文件
 run();
 
 /// 递归查询robot文件
 function readFileList(dir, fileList = []) {
-    
     const files = fs.readdirSync(dir);
     files.forEach((item) => {
         var fullpath = Path.join(dir, item);
@@ -36,7 +37,7 @@ function searchFiles(filelist = []) {
                 console.log("⚙  Find a robot file: " + fileName.pop().yellow + ", start lint...");
                 lintFile(file)
             }
-        })
+        });
         console.log('✅  Lint done! There is you report: ');
         /// 检测完后打印违规信息
         console.log(JSON.stringify(consoleJson, null, "\t").green);
@@ -44,7 +45,7 @@ function searchFiles(filelist = []) {
 }
 
 function run() {
-    console.log("🚀  Prelint...");
+    console.log("🚀  PreLint...");
     console.log("👺  Current Directory: " + Pwd);
     var fileList = readFileList(Pwd);
     if (fileList.length == 0) {
@@ -56,7 +57,6 @@ function run() {
 
 /// 对文件进行lint检测
 function lintFile(file) {
-
     /// 解析关键字
     var parser = new Parser();
     parser.parserFile(file);

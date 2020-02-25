@@ -1,6 +1,6 @@
 # RFLint
 
-A tool to check style and conventions of Robot Framework.
+A tool to check style and conventions of Robot Framework project.
 
 ## 环境
 

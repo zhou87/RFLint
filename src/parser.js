@@ -1,7 +1,7 @@
 #!usr/bin/env node
 
 const fs = require('fs')
-const readlineSync = require('../readline-sync')
+const readlineSync = require('./readline-sync')
 const settingsTable = require('./tables/SettingsTable')
 const table = require('./tables/Table')
 const keywordTable = require('./tables/KeyWorksTable')
