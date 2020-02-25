@@ -10,4 +10,5 @@ test-Pass
     \  Should Not Be Empty  ${element}
     Log         ${list}
     Run Keyword If  '${list[0]}'=='1'
-
+    ...      Log  test 
+    

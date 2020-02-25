@@ -190,7 +190,7 @@ function checkForLoop(file,tables) {
     }
 }
 
-/// 检测if后面的语句是否是"..."开头(尚待考虑)
+/// 检测if后面的语句是否是"..."开头
 function checkIf(file,tables) {
     for (let i = 0; i < tables.length; i++) {
         let table = tables[i];
@@ -204,8 +204,13 @@ function checkIf(file,tables) {
                     if (nextCells.length == 0) {
                         let output = constructOutPutJson(cells[0].lineNumber,file,table.rows[j+1].lineNumber, 'Run Keyword If条件语句之后的条件代码尽量另起一行，并用\'...\'换行', 'Waring', 'Run Keyword If')
                         consoleJson.push(output);
+
                     } else if (nextCells[0].text != '...') {
-                        let output = constructOutPutJson(cells[0].lineNumber,file,table.rows[j+1].lineNumber, 'Run Keyword If条件语句之后的条件代码尽量另起一行，并用\'...\'换行', 'Waring', 'Run Keyword If')
+                        let str = nextCells[0].text;
+                        nextCells.forEach((item) => {
+                            str += item.text;
+                        })
+                        let output = constructOutPutJson(cells[0].lineNumber,file,table.rows[j+1].lineNumber, 'Run Keyword If条件语句之后的条件代码尽量另起一行，并用\'...\'换行' + str, 'Waring', 'Run Keyword If')
                         consoleJson.push(output);
                     }
                 }
