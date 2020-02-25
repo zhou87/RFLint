@@ -1,11 +1,11 @@
 *** Settings ***
-Documentation  
+  
 
 *** Keywords ***
 登录弹个车C端-Pass
     ${list}=  Create List     1  2  3
     :FOR  ${element}  IN  @{list}
-    \  Log  ${element}
+      Log  ${element}
     Run Keyword If  '${list[0]}'=='1'   Log   False
 
 获取一个随机数
