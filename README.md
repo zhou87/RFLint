@@ -69,11 +69,11 @@ npm install rflint -g
 > `reason`: 报错、警告原因，文字描述；   
 > `severity`: 报错或者警告。目前只有两种类别: "Error"和”Warning“；   
 > `type`: 报错、警告类型。目前主要归为以下几类，初衷是希望能表明基本的风格类型   
->       1. **Documentation**   
->       2. **Same Name**    
->       3. **For Loop**   
->       4. **Run Keyword If**   
->       5. **Line Space**   
->       6. **KeyWordsAndTestCase**   
->       7. **Quote**   
->       8. **ParameterName**   
+>       1. Documentation   
+>       2. Same Name    
+>       3. For Loop   
+>       4. Run Keyword If    
+>       5. Line Space   
+>       6. KeyWordsAndTestCase   
+>       7. Quote   
+>       8. ParameterName   
