@@ -1,15 +1,22 @@
 #!/usr/bin/env  node
 
-const Path = require('path')
-const fs = require('fs')
-const Parser = require('./parser')
-const [node, path, ...argv] = process.argv
-const consoleJson = new Array()
+const Path = require('path');
+const fs = require('fs');
+const Parser = require('./parser');
+const program = require('commander');
+const [node, path, ...argv] = process.argv;
+const consoleJson = new Array();
 const Pwd = process.cwd();
 require('colors');
 
+/// 参数处理
+const pkg = JSON.parse(fs.readFileSync(`${__dirname}/../package.json`, 'utf8'));
+program
+    .version(pkg.version, '-v, --version')
+    .parse(process.argv);
 
-/// 检测文件
+
+/// 启动检测
 run();
 
 /// 递归查询robot文件
@@ -20,7 +27,7 @@ function readFileList(dir, fileList = []) {
         const stat = fs.statSync(fullpath);
         if (stat.isDirectory()) {
             readFileList(fullpath, fileList);
-        } else if (endWith(item, '.robot')) {
+        } else if (fullpath.endsWith('.robot')) {
             fileList.push(fullpath);
         }
     });
@@ -32,10 +39,10 @@ function searchFiles(filelist = []) {
     if (filelist.length>0) {
         filelist.forEach((file) => {
             /// 判断文件是.robot后缀
-            if (endWith(file, '.robot')) {
+            if (file.endsWith('.robot')) {
                 var fileName = file.split('/');
                 console.log("⚙  Find a robot file: " + fileName.pop().yellow + ", start lint...");
-                lintFile(file)
+                lintFile(file);
             }
         });
         console.log('✅  Lint done! There is you report: \n🗞  Total files: ' + filelist.length + '\n 🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠');
@@ -47,7 +54,8 @@ function searchFiles(filelist = []) {
 function run() {
     console.log("🚀  PreLint...");
     console.log("👺  Current Directory: " + Pwd);
-    var fileList = readFileList(Pwd);
+    var fileList = [];
+    fileList = readFileList(Pwd, fileList);
     if (fileList.length == 0) {
         console.log('❌  没有找到相应的文件，请确认您的当前目录是否是在项目根目录！');
         process.exit();
@@ -116,13 +124,6 @@ function fileHasDocumentation(file, tables) {
             }
         }
     }
-}
-
-/// 是否以某个字符串结尾
-function endWith(str, endStr) {
-    var location = String(str).length - String(endStr).length
-    let isEnd = str.indexOf(endStr) === location
-    return isEnd
 }
 
 /// Variable、Keywords、TestCase文件内不能重名
