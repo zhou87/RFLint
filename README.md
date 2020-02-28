@@ -22,7 +22,7 @@ npm install rflint -g
 🚀  PreLint...
 👺  Current Directory: /Users/zhouhuiping/Documents/RFLint/rflint
 ⚙  Find a robot file: 首页.robot, start lint...
-✅  Lint done! There is you report: 
+✅  Lint done! There is your report: 
 🗞  Total files: 1
  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠
 [
