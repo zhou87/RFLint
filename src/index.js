@@ -305,24 +305,24 @@ function compareStringNeedSingleQuote(file, tables) {
                         if (String(nextText)[0] == '\'') {
                             /// 结尾如果不是单引号，报告错误
                             if (String(nextText)[(String(nextText).length -1)] != '\'') {
-                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber, file,row.lineNumber, '字符判断两边都要打上单引号', 'Warning', 'quote');
+                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber, file,row.lineNumber, '字符判断两边都要打上单引号', 'Warning', 'Quote');
                                 consoleJson.push(outputInfo);
                             }
                         } else if (String(nextText)[0] == '\"') {  /// 如果开头有双引号
                             /// 结尾如果不是双引号，报告错误
                             if (String(nextText)[(String(nextText).length -1)] != '\"') {
-                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber, file, row.lineNumber, '字符判断两边都要打上双引号', 'Warning', 'quote');
+                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber, file, row.lineNumber, '字符判断两边都要打上双引号', 'Warning', 'Quote');
                                 consoleJson.push(outputInfo);
                             }
                         } else if (String(nextText)[(String(nextText).length - 1)] == '\'') {  /// 如果结尾是单引号
                             /// 如果开头不是单引号
                             if (String(nextText)[0] != '\'') {
-                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber, file, row.lineNumber, '字符判断两边都要打上单引号', 'Warning', 'quote');
+                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber, file, row.lineNumber, '字符判断两边都要打上单引号', 'Warning', 'Quote');
                                 consoleJson.push(outputInfo);
                             }
                         } else if (String(nextText)[(String(nextText).length - 1)] == '\"') {  /// 如果结尾是双引号
                             if (String(nextText)[0] != '\"') {
-                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber, file,row.lineNumber, '字符判断两边都要打上双引号', 'Warning', 'quote');
+                                let outputInfo = constructOutPutJson(row.cells[m+1].lineNumber, file,row.lineNumber, '字符判断两边都要打上双引号', 'Warning', 'Quote');
                                 consoleJson.push(outputInfo);
                             }
                         }

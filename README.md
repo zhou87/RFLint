@@ -60,6 +60,20 @@ npm install rflint -g
         }
 ]
 ```
-为了能有高度的自定义能力，这里的报错和警告都已`json`数组的形式返回，方便自己处理和生成报表。
+为了满足高度的自定义能力，这里的报错和警告都以`json`数组的形式返回，方便自己处理和生成报表。
 
-
+字段定义可以简单描述为：
+> `character`: 代码风格不规范出现的首字符位置；
+> `file`: 报错、警告出现的文件；
+> `line`: 报错、警告出现在文件的行；
+> `reason`: 报错、警告原因，文字描述；
+> `severity`: 报错或者警告。目前只有两种类别: "Error"和”Warning“；
+> `type`: 报错、警告类型。目前主要归为以下几类，初衷是希望能表明基本的风格类型
+>       1. **Documentation**
+>       2. **Same Name**
+>       3. **For Loop**
+>       4. **Run Keyword If**
+>       5. **Line Space**
+>       6. **KeyWordsAndTestCase**
+>       7. **Quote**
+>       8. **ParameterName**
