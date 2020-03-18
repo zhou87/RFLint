@@ -45,7 +45,8 @@ function searchFiles(filelist = []) {
                 lintFile(file);
             }
         });
-        console.log('✅  Lint done! There is your report: \n🗞  Total files: ' + filelist.length + '\n 🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠');
+        console.log("🗞  Total files: " + filelist.length + "\n");
+        console.log('✅  Lint done! There is your report: ' + '\n 🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠  🦠');
         /// 检测完后打印违规信息
         console.log(JSON.stringify(consoleJson, null, "\t").green);
     }
@@ -54,8 +55,14 @@ function searchFiles(filelist = []) {
 function run() {
     console.log("🚀  PreLint...");
     console.log("👺  Current Directory: " + Pwd);
+    console.log(">>>>" + process.argv[2]);
     var fileList = [];
-    fileList = readFileList(Pwd, fileList);
+    if (process.argv[2] != undefined) {
+        var filepath = Pwd + "/" + process.argv[2];
+        fileList = [filepath];
+    } else {
+        fileList = readFileList(Pwd, fileList);
+    }
     if (fileList.length == 0) {
         console.log('❌  没有找到相应的文件，请确认您的当前目录是否是在项目根目录！');
         process.exit();
